@@ -2,6 +2,20 @@
 
 All notable changes to `peppy_rescaler` are documented in this file.
 
+## [2.1] - 2026-05-31
+
+### Changed
+
+- Preserve linear meter bar-count semantics during rescaling:
+  - `position.regular` is no longer scaled.
+  - `position.overload` is no longer scaled.
+- Preserve ticker semantic/timing values during rescaling:
+  - `playinfo.ticker.speed` is no longer scaled.
+  - `playinfo.ticker.space_between` is no longer scaled.
+  - `playinfo.ticker.end_spaces` is no longer scaled.
+- Updated script version marker to `v2.1`.
+- Updated README classification and version notes for v2.1 behavior.
+
 ## [2.0] - 2026-05-31
 
 ### Added

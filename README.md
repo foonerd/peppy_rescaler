@@ -7,7 +7,7 @@ target resolution using best-fit scaling with center offsets. It keeps the
 folder structure, rescales raster images, and transforms layout values in
 `meters.txt` according to classification rules.
 
-This repository currently provides **rescaler version 2.0** (`rescale_template.py`).
+This repository currently provides **rescaler version 2.1** (`rescale_template.py`).
 
 ## What It Does
 
@@ -53,7 +53,7 @@ python3 rescale_template.py
 
 Inside `rescale_template.py`:
 
-- `RESCALER_VERSION` - informational version string (currently `2.0`)
+- `RESCALER_VERSION` - informational version string (currently `2.1`)
 - `SOURCE_WIDTH` / `SOURCE_HEIGHT` - source design resolution
 - `TARGET_WIDTH` / `TARGET_HEIGHT` - target design resolution
 - `INPUT_FOLDER` - source template folder containing `meters.txt`
@@ -89,7 +89,7 @@ Offsets:
 - `offset_x = (TARGET_WIDTH - SOURCE_WIDTH * scale) / 2`
 - `offset_y = (TARGET_HEIGHT - SOURCE_HEIGHT * scale) / 2`
 
-## meters.txt Key Classification (v2.0)
+## meters.txt Key Classification (v2.1)
 
 The script classifies keys into:
 
@@ -100,10 +100,8 @@ The script classifies keys into:
 
 2. `DIMENSION_KEYS` - sizes/ranges, e.g.:
    - `distance`
-   - `position.regular`, `position.overload`
    - `step.width.regular`, `step.width.overload`
    - `playinfo.*.maxwidth`
-   - `playinfo.ticker.speed`, `playinfo.ticker.space_between`, `playinfo.ticker.end_spaces`
 
 3. `FONT_SIZE_KEYS` - font sizes:
    - `font.size.*`
@@ -112,6 +110,8 @@ The script classifies keys into:
 4. `KEYS_NEVER_SCALE` - preserved as authored:
    - `steps.per.degree`
    - `ui.refresh.period`
+   - `position.regular`, `position.overload`
+   - `playinfo.ticker.speed`, `playinfo.ticker.space_between`, `playinfo.ticker.end_spaces`
    - rotation speeds and tonearm durations
 
 Additionally:
@@ -162,6 +162,7 @@ need manual adjustments.
 
 ## Versioning
 
+- `2.1` - collaboration update: preserve semantic bar-count and ticker keys (no numeric scaling)
 - `2.0` - baseline rescaler behavior for this repository
 
 ## License

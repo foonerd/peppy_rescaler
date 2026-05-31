@@ -16,7 +16,7 @@ from PIL import Image, ImageSequence
 # CONFIGURATION
 # =============================================================================
 
-RESCALER_VERSION = "2.0"
+RESCALER_VERSION = "2.1"
 
 SOURCE_WIDTH = 1920
 SOURCE_HEIGHT = 1080
@@ -72,7 +72,6 @@ POSITION_KEYS = {
 # Dimension keys — scale only, no offset
 DIMENSION_KEYS = {
     'distance',
-    'position.regular', 'position.overload',
     'step.width.regular', 'step.width.overload',
     'albumart.dimension',
     'albumart.border',
@@ -90,9 +89,6 @@ DIMENSION_KEYS = {
     'playinfo.next.title.maxwidth',
     'playinfo.next.artist.maxwidth',
     'playinfo.next.album.maxwidth',
-    'playinfo.ticker.space_between',
-    'playinfo.ticker.end_spaces',
-    'playinfo.ticker.speed',
     'volume.slider.travel',
     'volume.slider.tip.offset',
     'tonearm.pivot.image',
@@ -115,6 +111,13 @@ FONT_SIZE_KEYS = {
 
 # Never treat as layout (explicit exclusions for heuristics)
 KEYS_NEVER_SCALE = {
+    # Semantic count values for linear bars; keep authored bar count.
+    'position.regular',
+    'position.overload',
+    # Ticker behavior/text semantics (not geometry).
+    'playinfo.ticker.speed',
+    'playinfo.ticker.space_between',
+    'playinfo.ticker.end_spaces',
     'albumart.rotation.speed',
     'reel.rotation.speed',
     'ui.refresh.period',
@@ -155,8 +158,6 @@ def classify_key(key: str):
         # e.g. mute.icon.glow; not *.glow.intensity / *.glow.color
         return 'dimension'
     if re.search(r'\.border$', key) and not key.endswith('.border.color'):
-        return 'dimension'
-    if key == 'playinfo.ticker.speed':
         return 'dimension'
     return None
 
