@@ -89,6 +89,51 @@ Offsets:
 - `offset_x = (TARGET_WIDTH - SOURCE_WIDTH * scale) / 2`
 - `offset_y = (TARGET_HEIGHT - SOURCE_HEIGHT * scale) / 2`
 
+## Visual Overview
+
+### End-to-end pipeline
+
+```mermaid
+flowchart TD
+    A["Input template folder<br/>(images + meters.txt)"] --> B["Compute scale and offsets<br/>scale=min(scale_x, scale_y)"]
+    B --> C["Parse meters.txt"]
+    C --> D{"Classify each key"}
+    D -->|Position| E["Scale value + center offset"]
+    D -->|Dimension| F["Scale value only"]
+    D -->|Font| G["Scale font size"]
+    D -->|Never scale| H["Keep authored value"]
+    E --> I["Write transformed meters.txt"]
+    F --> I
+    G --> I
+    H --> I
+    B --> J["Walk assets recursively"]
+    J --> K{"File type"}
+    K -->|Raster image| L["Resize with LANCZOS"]
+    K -->|GIF| M["Resize all frames"]
+    K -->|Other| N["Copy unchanged"]
+    L --> O["Output folder"]
+    M --> O
+    N --> O
+    I --> O
+```
+
+### Key-classification decision logic (v2.1)
+
+```mermaid
+flowchart LR
+    A["meters.txt key"] --> B{"In KEYS_NEVER_SCALE?"}
+    B -->|Yes| N["No transform"]
+    B -->|No| C{"progress.marker.N.pos?"}
+    C -->|Yes| N
+    C -->|No| D{"In POSITION_KEYS<br/>or ends with .pos?"}
+    D -->|Yes| P["Position transform<br/>(scale + offset)"]
+    D -->|No| E{"In DIMENSION_KEYS<br/>or ends with .dimension/.maxwidth/.offset?"}
+    E -->|Yes| Q["Dimension transform<br/>(scale only)"]
+    E -->|No| F{"In FONT_SIZE_KEYS<br/>or contains .fontsize?"}
+    F -->|Yes| R["Font transform<br/>(scale only)"]
+    F -->|No| N
+```
+
 ## meters.txt Key Classification (v2.1)
 
 The script classifies keys into:
