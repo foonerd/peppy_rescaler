@@ -158,6 +158,7 @@ The script classifies keys into:
    - `position.regular`, `position.overload`
    - `playinfo.ticker.speed`, `playinfo.ticker.space_between`, `playinfo.ticker.end_spaces`
    - rotation speeds and tonearm durations
+   - `meter.preview` (gallery metadata filename, not a drawable asset path to scale)
 
 Additionally:
 

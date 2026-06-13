@@ -124,6 +124,7 @@ KEYS_NEVER_SCALE = {
     'steps.per.degree',
     'tonearm.drop.duration',
     'tonearm.lift.duration',
+    'meter.preview',
 }
 
 
