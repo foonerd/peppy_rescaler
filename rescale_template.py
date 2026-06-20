@@ -16,7 +16,7 @@ from PIL import Image, ImageSequence
 # CONFIGURATION
 # =============================================================================
 
-RESCALER_VERSION = "2.1"
+RESCALER_VERSION = "2.2"
 
 SOURCE_WIDTH = 1920
 SOURCE_HEIGHT = 1080
@@ -91,6 +91,10 @@ DIMENSION_KEYS = {
     'playinfo.next.album.maxwidth',
     'volume.slider.travel',
     'volume.slider.tip.offset',
+    'volume.fill.width',
+    'volume.fill.radius',
+    'volume.arc.width',
+    'progress.arc.width',
     'tonearm.pivot.image',
     'mute.icon.glow',
     'playstate.icon.glow',
@@ -104,6 +108,9 @@ FONT_SIZE_KEYS = {
     'font.size.light',
     'font.size.regular',
     'font.size.bold',
+    'font.size.italic',
+    'progress.font.size',
+    'volume.font.size',
     'time.remaining.fontsize',
     'time.elapsed.fontsize',
     'time.total.fontsize',
@@ -144,12 +151,20 @@ def classify_key(key: str):
         return 'dimension'
     if key in FONT_SIZE_KEYS:
         return 'font'
+    if key.startswith('font.size.'):
+        return 'font'
+    if key.endswith('.font.size'):
+        return 'font'
 
     if key.endswith('.pos'):
         return 'position'
     if key.endswith('.maxwidth'):
         return 'dimension'
     if key.endswith('.dimension'):
+        return 'dimension'
+    if key.endswith('.width'):
+        return 'dimension'
+    if key.endswith('.radius'):
         return 'dimension'
     if '.fontsize' in key or key.endswith('.fontsize'):
         return 'font'
@@ -161,6 +176,50 @@ def classify_key(key: str):
     if re.search(r'\.border$', key) and not key.endswith('.border.color'):
         return 'dimension'
     return None
+
+
+def verify_classify_key():
+    """Self-check for key classification (Gallery Engine keys + regressions)."""
+    cases = {
+        # Gallery Engine: folder layers and fanart
+        'folderlayer.pos': 'position',
+        'folderlayer.1.pos': 'position',
+        'folderlayer.dimension': 'dimension',
+        'folderlayer.1.dimension': 'dimension',
+        'folderlayer.scale': None,
+        'fanart.pos': 'position',
+        'fanart.dimension': 'dimension',
+        'fanart.scale': None,
+        # Gallery Engine: italic font + volume fill
+        'font.size.italic': 'font',
+        'volume.fill.width': 'dimension',
+        'volume.fill.offset': 'dimension',
+        'volume.fill.radius': 'dimension',
+        'volume.fill.color': None,
+        # Gallery Engine: progress markers
+        'progress.marker.1.pos': None,
+        'progress.marker.1.fontsize': 'font',
+        'playinfo.samplerate.color': None,
+        # Arc / per-widget font sizes
+        'volume.arc.width': 'dimension',
+        'progress.arc.width': 'dimension',
+        'progress.font.size': 'font',
+        'volume.font.size': 'font',
+        # v2.1 semantic keys must stay untouched
+        'position.regular': None,
+        'playinfo.ticker.speed': None,
+        'meter.preview': None,
+    }
+    errors = []
+    for key, expected in cases.items():
+        got = classify_key(key)
+        if got != expected:
+            errors.append(f"  {key!r}: expected {expected!r}, got {got!r}")
+    if errors:
+        print("classify_key verification FAILED:")
+        print("\n".join(errors))
+        sys.exit(1)
+    print(f"classify_key verification OK ({len(cases)} cases)")
 
 
 # =============================================================================
@@ -459,4 +518,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    if len(sys.argv) > 1 and sys.argv[1] == '--verify':
+        verify_classify_key()
+    else:
+        main()

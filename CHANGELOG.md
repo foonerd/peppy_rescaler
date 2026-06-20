@@ -2,6 +2,22 @@
 
 All notable changes to `peppy_rescaler` are documented in this file.
 
+## [2.2] - 2026-06-20
+
+### Added
+
+- Scale Gallery Engine `meters.txt` keys:
+  - `font.size.italic`, `progress.font.size`, `volume.font.size`
+  - `volume.fill.width`, `volume.fill.radius`
+  - `volume.arc.width`, `progress.arc.width`
+- Suffix heuristics for future keys: `font.size.*`, `*.font.size`, `*.width`, `*.radius`
+- `python3 rescale_template.py --verify` self-check for key classification
+
+### Notes
+
+- `folderlayer.*` / `fanart.*` pos and dimension keys were already covered by v2.1
+  suffix rules; no change needed there.
+
 ## [2.1] - 2026-05-31
 
 ### Changed

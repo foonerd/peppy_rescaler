@@ -7,7 +7,7 @@ target resolution using best-fit scaling with center offsets. It keeps the
 folder structure, rescales raster images, and transforms layout values in
 `meters.txt` according to classification rules.
 
-This repository currently provides **rescaler version 2.1** (`rescale_template.py`).
+This repository currently provides **rescaler version 2.2** (`rescale_template.py`).
 
 ## What It Does
 
@@ -53,7 +53,7 @@ python3 rescale_template.py
 
 Inside `rescale_template.py`:
 
-- `RESCALER_VERSION` - informational version string (currently `2.1`)
+- `RESCALER_VERSION` - informational version string (currently `2.2`)
 - `SOURCE_WIDTH` / `SOURCE_HEIGHT` - source design resolution
 - `TARGET_WIDTH` / `TARGET_HEIGHT` - target design resolution
 - `INPUT_FOLDER` - source template folder containing `meters.txt`
@@ -117,7 +117,7 @@ flowchart TD
     I --> O
 ```
 
-### Key-classification decision logic (v2.1)
+### Key-classification decision logic (v2.2)
 
 ```mermaid
 flowchart LR
@@ -127,14 +127,14 @@ flowchart LR
     C -->|Yes| N
     C -->|No| D{"In POSITION_KEYS<br/>or ends with .pos?"}
     D -->|Yes| P["Position transform<br/>(scale + offset)"]
-    D -->|No| E{"In DIMENSION_KEYS<br/>or ends with .dimension/.maxwidth/.offset?"}
+    D -->|No| E{"In DIMENSION_KEYS<br/>or ends with .dimension/.maxwidth/.offset/.width/.radius?"}
     E -->|Yes| Q["Dimension transform<br/>(scale only)"]
-    E -->|No| F{"In FONT_SIZE_KEYS<br/>or contains .fontsize?"}
+    E -->|No| F{"In FONT_SIZE_KEYS<br/>font.size.* / *.font.size / .fontsize?"}
     F -->|Yes| R["Font transform<br/>(scale only)"]
     F -->|No| N
 ```
 
-## meters.txt Key Classification (v2.1)
+## meters.txt Key Classification (v2.2)
 
 The script classifies keys into:
 
@@ -147,10 +147,12 @@ The script classifies keys into:
    - `distance`
    - `step.width.regular`, `step.width.overload`
    - `playinfo.*.maxwidth`
+   - `volume.fill.width`, `volume.fill.radius`, `*.arc.width`
 
 3. `FONT_SIZE_KEYS` - font sizes:
-   - `font.size.*`
-   - `time.*.fontsize`
+   - `font.size.*` (including `font.size.italic`)
+   - `progress.font.size`, `volume.font.size`
+   - `time.*.fontsize`, `progress.marker.N.fontsize`
 
 4. `KEYS_NEVER_SCALE` - preserved as authored:
    - `steps.per.degree`
@@ -163,6 +165,9 @@ The script classifies keys into:
 Additionally:
 
 - `progress.marker.N.pos` is explicitly preserved (0-100 percentage semantics).
+- `folderlayer.*` / `fanart.*` pos and dimension keys scale via `.pos` / `.dimension` suffix rules.
+
+Run `python3 rescale_template.py --verify` to validate classification rules.
 
 ## Asset Handling
 
@@ -208,6 +213,7 @@ need manual adjustments.
 
 ## Versioning
 
+- `2.2` - Gallery Engine keys: italic font size, volume fill width/radius, arc stroke widths
 - `2.1` - collaboration update: preserve semantic bar-count and ticker keys (no numeric scaling)
 - `2.0` - baseline rescaler behavior for this repository
 
